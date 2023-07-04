@@ -1,5 +1,8 @@
+import { useState } from "react";
+
 import { Box, styled } from "@mui/material";
 import CloseFullscreenIcon from "@mui/icons-material/CloseFullscreen";
+import OpenInFullIcon from "@mui/icons-material/OpenInFull";
 
 import { Controlled as ControlledEditor } from "react-codemirror2";
 
@@ -32,9 +35,19 @@ const Header = styled(Box)`
   font-weight: 700;
 `;
 
-const Editor = ({ heading, icon, color }) => {
+const Editor = ({ heading, icon, color, value, onChange }) => {
+  const [open, setOpen] = useState(true);
+
+  const handleClick = () => {
+    setOpen((prevState) => !prevState);
+  };
+
+  const handleChange = (editor, data, value) => {
+    onChange(value);
+  };
+
   return (
-    <Container>
+    <Container style={open ? null : { flexGrow: 0 }}>
       <Header>
         <Heading>
           <Box
@@ -55,10 +68,26 @@ const Editor = ({ heading, icon, color }) => {
           </Box>
           {heading}
         </Heading>
-        <CloseFullscreenIcon />
+        <>
+          {open ? (
+            <CloseFullscreenIcon
+              fontSize="small"
+              style={{ alignSelf: "center" }}
+              onClick={handleClick}
+            />
+          ) : (
+            <OpenInFullIcon
+              fontSize="small"
+              style={{ alignSelf: "center" }}
+              onClick={handleClick}
+            />
+          )}
+        </>
       </Header>
       <ControlledEditor
         className="controlled-editor"
+        value={value}
+        onBeforeChange={handleChange}
         options={{
           theme: "material",
           lineNumbers: true,
